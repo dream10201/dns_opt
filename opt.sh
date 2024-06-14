@@ -34,11 +34,13 @@ done
 
 checkDoh() {
     if curl --connect-timeout 1 -m 2 --doh-url "$1" -v "https://www.google.com" 2>&1 | grep -q "was resolved."; then
-        return 0
-    else
-        return 1
+        if curl --connect-timeout 1 -m 2 --doh-url "$1" -v "https://x.com" 2>&1 | grep -q "was resolved."; then
+            if curl --connect-timeout 1 -m 2 --doh-url "$1" -v "https://www.facebook.com" 2>&1 | grep -q "was resolved."; then
+                return 0
+            fi
+        fi
     fi
-
+    return 1
 }
 
 cp "${CONF_PATH}/${CONF_NAME}" "$conf_tmp"
@@ -93,3 +95,4 @@ rm "$conf_tmp"
 rm "$ad_tmp"
 rm "$white_tmp"
 exit 0
+
