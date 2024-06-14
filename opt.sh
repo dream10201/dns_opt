@@ -43,7 +43,8 @@ checkDoh() {
 
 cp "${CONF_PATH}/${CONF_NAME}" "$conf_tmp"
 sed -i '/^server-https/d' "$conf_tmp"
-urls=$(curl -s "https://adguard-dns.io/kb/zh-CN/general/dns-providers/" | grep -oP '<tr><td>DNS-over-HTTPS(.*?)</td><td><code>\Khttps://[^<]+')
+#urls=$(curl -s "https://adguard-dns.io/kb/zh-CN/general/dns-providers/" | grep -oP '<tr><td>DNS-over-HTTPS(.*?)</td><td><code>\Khttps://[^<]+')
+urls=$(curl -sSx ${PROXY} "https://raw.githubusercontent.com/dream10201/DNS-over-HTTPS/master/doh.list")
 declare -A ping_times
 declare -A url_map
 
@@ -51,7 +52,8 @@ compare_float() {
     awk -v n1="$1" -v n2="$2" 'BEGIN {if (n1 < n2) exit 0; exit 1}'
 }
 for url in ${urls}; do
-    domain=$(echo "$url" | awk -F/ '{print $3}')
+    #domain=$(echo "$url" | awk -F/ '{print $3}')
+    domain=$(echo "${url}" | sed -E 's#^.*://([^/]+).*#\1#' | sed -E 's#^.*\.([^\.]+\.[^\.]+)$#\1#')
     if [[ " ${BLOCK_DNS[*]} " == *" $domain "* ]]; then
         continue
     fi
@@ -68,8 +70,8 @@ for url in ${urls}; do
     if [ -z "${ping_times[$domain]}" ] || compare_float "$avg_time" "${ping_times[$domain]}"; then
         ping_times["$domain"]=$avg_time
         url_map["$domain"]=$url
+        echo "$url => ${avg_time} ms"
     fi
-    echo "$url => ${avg_time} ms"
 done
 
 sorted_urls=$(for domain in "${!ping_times[@]}"; do
