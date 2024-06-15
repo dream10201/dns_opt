@@ -21,8 +21,9 @@ conf_tmp=$(mktemp)
 download() {
     echo -n "download ${1}"
     if ! curl -sSx ${PROXY} "${1}" >> "${2}"; then
-        echo  -ne "\rdownload ${1} error!"
+        echo  -ne "\rdownload ${1} \033[31m\xE2\x9D\x8C\033[0m"
     fi
+    echo -ne " \033[32m\xE2\x9C\x85\033[0m"
     echo ""
 }
 for bl in "${AD_LIST[@]}"; do
@@ -36,11 +37,8 @@ CHECK_LINK=("https://www.google.com/ncr" "https://x.com" "https://www.facebook.c
 checkDoh() {
     local i=0
     for link in "${CHECK_LINK[@]}"; do
-        curl -sS --connect-timeout 1 -m 2 -v --doh-url "$1" "${link}" 2>&1 -o /dev/null | grep -q "was resolved." || ((i++))
+        curl -sS --connect-timeout 1 -m 2 -v --doh-url "$1" "${link}" 2>&1 -o /dev/null | grep -q "was resolved." || return 1
     done
-    if [[ "${i}" -gt 0 ]]; then
-        return 1
-    fi
     return 0
 }
 
@@ -54,26 +52,32 @@ compare_float() {
     awk -v n1="$1" -v n2="$2" 'BEGIN {if (n1 < n2) exit 0; exit 1}'
 }
 for url in ${urls}; do
-    #domain=$(echo "$url" | awk -F/ '{print $3}')
-    domain=$(echo "${url}" | sed -E 's#^.*://([^/]+).*#\1#' | sed -E 's#^.*\.([^\.]+\.[^\.]+)$#\1#')
+    domain=$(echo "$url" | awk -F/ '{print $3}')
+    #domain=$(echo "${url}" | sed -E 's#^.*://([^/]+).*#\1#' | sed -E 's#^.*\.([^\.]+\.[^\.]+)$#\1#')
     if [[ " ${BLOCK_DNS[*]} " == *" $domain "* ]]; then
         continue
     fi
 
     avg_time=$(ping -A -c 9 -W 1 "$domain" 2>/dev/null | awk -F'/' '/^rtt/ {print $5}' 2>/dev/null)
+    echo -n "${url}"
 
     if [ -z "$avg_time" ]; then
+        echo -ne " \033[31m\xE2\x9D\x8C\033[0m"
+        echo ""
         continue
     fi
     if ! checkDoh "$url"; then
+        echo -ne " \033[31m\xE2\x9D\x8C\033[0m"
+        echo ""
         continue
     fi
     
     if [ -z "${ping_times[$domain]}" ] || compare_float "$avg_time" "${ping_times[$domain]}"; then
         ping_times["$domain"]=$avg_time
         url_map["$domain"]=$url
-        echo "$url => ${avg_time} ms"
+        echo -ne " ${avg_time}ms \033[32m\xE2\x9C\x85\033[0m"
     fi
+    echo ""
 done
 
 sorted_urls=$(for domain in "${!ping_times[@]}"; do
