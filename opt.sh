@@ -32,20 +32,20 @@ for wl in "${WHITE_LIST[@]}"; do
     download "$wl" "$white_tmp"
 done
 
+CHECK_LINK=("https://www.google.com/ncr" "https://x.com" "https://www.facebook.com" "https://www.youtube.com" "https://www.baidu.com")
 checkDoh() {
-    if curl --connect-timeout 1 -m 2 --doh-url "$1" -v "https://www.google.com" 2>&1 | grep -q "was resolved."; then
-        if curl --connect-timeout 1 -m 2 --doh-url "$1" -v "https://x.com" 2>&1 | grep -q "was resolved."; then
-            if curl --connect-timeout 1 -m 2 --doh-url "$1" -v "https://www.facebook.com" 2>&1 | grep -q "was resolved."; then
-                return 0
-            fi
-        fi
+    local i=0
+    for link in "${CHECK_LINK[@]}"; do
+        curl -sS --connect-timeout 1 -m 2 -v --doh-url "$1" "${link}" 2>&1 -o /dev/null | grep -q "was resolved." || ((i++))
+    done
+    if [[ "${i}" -gt 0 ]]; then
+        return 1
     fi
-    return 1
+    return 0
 }
 
 cp "${CONF_PATH}/${CONF_NAME}" "$conf_tmp"
 sed -i '/^server-https/d' "$conf_tmp"
-#urls=$(curl -s "https://adguard-dns.io/kb/zh-CN/general/dns-providers/" | grep -oP '<tr><td>DNS-over-HTTPS(.*?)</td><td><code>\Khttps://[^<]+')
 urls=$(curl -sSx ${PROXY} "https://raw.githubusercontent.com/dream10201/DNS-over-HTTPS/master/doh.list")
 declare -A ping_times
 declare -A url_map
@@ -95,4 +95,3 @@ rm "$conf_tmp"
 rm "$ad_tmp"
 rm "$white_tmp"
 exit 0
-
