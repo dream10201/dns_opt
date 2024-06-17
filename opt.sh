@@ -13,6 +13,10 @@ AD_LIST=(
 WHITE_LIST=(
     "https://raw.githubusercontent.com/privacy-protection-tools/dead-horse/master/anti-ad-white-for-smartdns.txt"
 )
+ad_tmp=$(mktemp)
+white_tmp=$(mktemp)
+conf_tmp=$(mktemp)
+
 download() {
     echo -n "download ${1}"
     if ! curl -sSx ${PROXY} "${1}" >> "${2}"; then
@@ -21,9 +25,6 @@ download() {
     echo -ne " \033[32m\xE2\x9C\x85\033[0m"
     echo ""
 }
-ad_tmp=$(mktemp)
-white_tmp=$(mktemp)
-conf_tmp=$(mktemp)
 
 other_list(){
     local v2ray_rules_dat_ad=(
