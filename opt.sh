@@ -21,7 +21,7 @@ conf_tmp=$(mktemp)
 download() {
     echo -n "download ${1}"
     if ! curl -sSx ${PROXY} "${1}" >> "${2}"; then
-        echo  -ne "\rdownload ${1} \033[31m\xE2\x9D\x8C\033[0m"
+        echo  -ne " \033[31m\xE2\x9D\x8E\033[0m"
     fi
     echo -ne " \033[32m\xE2\x9C\x85\033[0m"
     echo ""
@@ -62,12 +62,12 @@ for url in ${urls}; do
     echo -n "${url}"
 
     if [ -z "$avg_time" ]; then
-        echo -ne " \033[31m\xE2\x9D\x8C\033[0m"
+        echo -ne " \033[31m\xE2\x9D\x8E\033[0m"
         echo ""
         continue
     fi
     if ! checkDoh "$url"; then
-        echo -ne " \033[31m\xE2\x9D\x8C\033[0m"
+        echo -ne " \033[31m\xE2\x9D\x8E\033[0m"
         echo ""
         continue
     fi
