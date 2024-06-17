@@ -36,7 +36,7 @@ other_list(){
     local wl=""
     for bl in "${v2ray_rules_dat_ad[@]}"; do
         echo -n "download ${bl}"
-        if ! curl -sSx ${PROXY} "${bl}" | sed 's/^/address \//;s/$/ \/#/' >> "${ad_tmp}"; then
+        if ! curl -sSx ${PROXY} "${bl}" | sed 's/^/address \//;s/$/\/#/' >> "${ad_tmp}"; then
             echo  -ne " \033[31m\xE2\x9D\x8E\033[0m"
         fi
         echo -ne " \033[32m\xE2\x9C\x85\033[0m"
@@ -44,7 +44,7 @@ other_list(){
     done
     for wl in "${v2ray_rules_dat_white[@]}"; do
         echo -n "download ${bl}"
-        if ! curl -sSx ${PROXY} "${wl}" | sed 's/^/address \//;s/$/ \/-/' >> "${white_tmp}"; then
+        if ! curl -sSx ${PROXY} "${wl}" | sed 's/^/address \//;s/$/\/-/' >> "${white_tmp}"; then
             echo  -ne " \033[31m\xE2\x9D\x8E\033[0m"
         fi
         echo -ne " \033[32m\xE2\x9C\x85\033[0m"
