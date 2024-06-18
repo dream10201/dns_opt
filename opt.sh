@@ -88,6 +88,4 @@ cat "$conf_tmp" >${CONF_PATH}/${CONF_NAME}
 systemctl restart smartdns.service
 
 rm "$conf_tmp"
-rm "$ad_tmp"
-rm "$white_tmp"
 exit 0
