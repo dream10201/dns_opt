@@ -5,16 +5,7 @@ CONF_PATH="/etc/smartdns"
 CONF_NAME="smartdns.conf"
 PROXY="http://127.0.0.1:10809"
 BLOCK_DNS=("dns.pub" "doh.360.cn" "dns.alidns.com" "doh.pub")
-AD_LIST=(
-    "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-smartdns.conf"
-    "https://raw.githubusercontent.com/Cats-Team/AdRules/main/smart-dns.conf"
-    "https://raw.githubusercontent.com/neodevpro/neodevhost/master/smartdns.conf"
-)
-WHITE_LIST=(
-    "https://raw.githubusercontent.com/privacy-protection-tools/dead-horse/master/anti-ad-white-for-smartdns.txt"
-)
-ad_tmp=$(mktemp)
-white_tmp=$(mktemp)
+
 conf_tmp=$(mktemp)
 echo_err(){
     echo  -ne " \033[31m\xE2\x9D\x8C\033[0m"
@@ -31,27 +22,9 @@ download() {
     echo ""
 }
 
-other_list(){
-    local v2ray_rules_dat_ad=(
-        "https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/reject-list.txt"
-    )
-    local bl=""
-    for bl in "${v2ray_rules_dat_ad[@]}"; do
-        echo -n "download ${bl}"
-        if ! curl -sSx ${PROXY} "${bl}" | sed 's/^/address \//;s/$/\/#/' >> "${ad_tmp}"; then
-            echo_err
-        fi
-        echo_success
-        echo ""
-    done
-}
-other_list
-for bl in "${AD_LIST[@]}"; do
-    download "$bl" "$ad_tmp"
-done
-for wl in "${WHITE_LIST[@]}"; do
-    download "$wl" "$white_tmp"
-done
+download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/ad.conf" "${CONF_PATH}/ad.conf"
+download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/white.conf" "${CONF_PATH}/white.conf"
+
 
 CHECK_LINK=("https://www.google.com/ncr" "https://x.com" "https://www.facebook.com" "https://www.youtube.com" "https://www.baidu.com")
 checkDoh() {
@@ -111,8 +84,6 @@ done
 echo ""
 echo "$sorted_urls"
 
-grep "^address" "$ad_tmp" | sort | uniq >${CONF_PATH}/ad.conf
-grep "^address" "$white_tmp" | sort | uniq >${CONF_PATH}/white.conf
 cat "$conf_tmp" >${CONF_PATH}/${CONF_NAME}
 systemctl restart smartdns.service
 
