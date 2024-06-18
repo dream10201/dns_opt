@@ -21,7 +21,7 @@ echo_success(){
 
 download() {
     echo -n "download ${1}"
-    if ! curl -sSx ${PROXY} "${1}" | grep "^address" >> "${2}"; then
+    if ! curl -sS "${1}" | grep "^address" >> "${2}"; then
         echo_err
     fi
     echo_success
@@ -35,7 +35,7 @@ other_list(){
     local bl=""
     for bl in "${v2ray_rules_dat_ad[@]}"; do
         echo -n "download ${bl}"
-        if ! curl -sSx ${PROXY} "${bl}" | sed 's/^/address \//;s/$/\/#/' >> "${ad_tmp}"; then
+        if ! curl -sS "${bl}" | sed 's/^/address \//;s/$/\/#/' >> "${ad_tmp}"; then
             echo_err
         fi
         echo_success
