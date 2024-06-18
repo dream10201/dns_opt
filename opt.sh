@@ -28,13 +28,30 @@ download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/white
 
 CHECK_LINK=("https://www.google.com/ncr" "https://x.com" "https://www.facebook.com" "https://www.youtube.com" "https://www.baidu.com")
 checkDoh() {
-    local i=0
+    local pids=()
+    local fail=0
     for link in "${CHECK_LINK[@]}"; do
-        curl -sS --connect-timeout 1 -m 2 -v --doh-url "$1" "${link}" 2>&1 -o /dev/null | grep -q "was resolved." || return 1
+        (curl -sS --connect-timeout 1 -m 2 -v --doh-url "$1" "${link}" 2>&1 -o /dev/null | grep -q "was resolved.") &
+        pids+=($!)
     done
-    return 0
+    while [ ${#pids[@]} -gt 0 ]; do
+        if ! wait -n; then
+            fail=1
+            break
+        fi
+        for i in "${!pids[@]}"; do
+            if ! kill -0 "${pids[i]}" 2>/dev/null; then
+                unset 'pids[i]'
+            fi
+        done
+    done
+    if [ "$fail" -eq 0 ]; then
+        return 0
+    else
+        kill "${pids[@]}" &>/dev/null
+        return 1
+    fi
 }
-
 cp "${CONF_PATH}/${CONF_NAME}" "$conf_tmp"
 sed -i '/^server-https/d' "$conf_tmp"
 urls=$(curl -sSx ${PROXY} "https://raw.githubusercontent.com/dream10201/DNS-over-HTTPS/master/doh.list")
