@@ -26,7 +26,7 @@ download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/ad.co
 download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/white.conf" "${CONF_PATH}/white.conf"
 
 
-CHECK_LINK=("https://www.google.com/ncr" "https://x.com" "https://www.facebook.com" "https://www.youtube.com" "https://www.baidu.com")
+CHECK_LINK=("https://www.apple.com.cn" "https://www.qq.com" "https://www.baidu.com")
 checkDoh() {
     local pids=()
     local fail=0
