@@ -16,13 +16,18 @@ WHITE_LIST=(
 ad_tmp=$(mktemp)
 white_tmp=$(mktemp)
 conf_tmp=$(mktemp)
-
+echo_err(){
+    echo  -ne " \033[31m\xE2\x9D\x8C\033[0m"
+}
+echo_success(){
+    echo -ne " \033[32m\xE2\x9C\x85\033[0m"
+}
 download() {
     echo -n "download ${1}"
     if ! curl -sSx ${PROXY} "${1}" >> "${2}"; then
-        echo  -ne " \033[31m\xE2\x9D\x8E\033[0m"
+        echo_err
     fi
-    echo -ne " \033[32m\xE2\x9C\x85\033[0m"
+    echo_success
     echo ""
 }
 
@@ -34,9 +39,9 @@ other_list(){
     for bl in "${v2ray_rules_dat_ad[@]}"; do
         echo -n "download ${bl}"
         if ! curl -sSx ${PROXY} "${bl}" | sed 's/^/address \//;s/$/\/#/' >> "${ad_tmp}"; then
-            echo  -ne " \033[31m\xE2\x9D\x8E\033[0m"
+            echo_err
         fi
-        echo -ne " \033[32m\xE2\x9C\x85\033[0m"
+        echo_success
         echo ""
     done
 }
@@ -77,12 +82,12 @@ for url in ${urls}; do
     echo -n "${url}"
 
     if [ -z "$avg_time" ]; then
-        echo -ne " \033[31m\xE2\x9D\x8E\033[0m"
+        echo_err
         echo ""
         continue
     fi
     if ! checkDoh "$url"; then
-        echo -ne " \033[31m\xE2\x9D\x8E\033[0m"
+        echo_err
         echo ""
         continue
     fi
@@ -90,7 +95,8 @@ for url in ${urls}; do
     if [ -z "${ping_times[$domain]}" ] || compare_float "$avg_time" "${ping_times[$domain]}"; then
         ping_times["$domain"]=$avg_time
         url_map["$domain"]=$url
-        echo -ne " ${avg_time}ms \033[32m\xE2\x9C\x85\033[0m"
+        echo_success
+        echo -ne " ${avg_time}ms"
     fi
     echo ""
 done
