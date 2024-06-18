@@ -15,7 +15,7 @@ echo_success(){
 }
 download() {
     echo -n "download ${1}"
-    if ! curl -sSx ${PROXY} "${1}" >> "${2}"; then
+    if ! curl -sSx ${PROXY} "${1}" > "${2}"; then
         echo_err
     fi
     echo_success
