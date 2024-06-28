@@ -12,6 +12,7 @@ WHITE_LIST=(
 )
 ad_tmp=$(mktemp)
 white_tmp=$(mktemp)
+ad_hosts_tmp=$(mktemp)
 echo_err(){
     echo  -ne " \033[31m\xE2\x9D\x8C\033[0m"
 }
@@ -35,7 +36,8 @@ other_list(){
     local bl=""
     for bl in "${v2ray_rules_dat_ad[@]}"; do
         echo -n "download ${bl}"
-        if ! curl -sS "${bl}" | sed 's/^/address \//;s/$/\/#/' >> "${ad_tmp}"; then
+        #if ! curl -sS "${bl}" | sed 's/^/address \//;s/$/\/#/' >> "${ad_hosts_tmp}"; then
+        if ! curl -sS "${bl}" | sed 's/^/0.0.0.0 /;s/$//' >> "${ad_hosts_tmp}"; then
             echo_err
         fi
         echo_success
@@ -52,7 +54,9 @@ done
 
 grep "^address" "$ad_tmp" | sort | uniq >ad.conf
 grep "^address" "$white_tmp" | sort | uniq >white.conf
+cat ${ad_hosts_tmp} | sort | uniq > ad.hosts
 
-rm "$ad_tmp"
-rm "$white_tmp"
+rm ${ad_tmp}
+rm ${white_tmp}
+rm ${ad_hosts_tmp}
 exit 0
