@@ -37,20 +37,21 @@ other_list(){
     for bl in "${v2ray_rules_dat_ad[@]}"; do
         echo -n "download ${bl}"
         #if ! curl -sS "${bl}" | sed 's/^/address \//;s/$/\/#/' >> "${ad_hosts_tmp}"; then
-        if ! curl -sS "${bl}" | sed 's/^/0.0.0.0 /;s/$//' >> "${ad_hosts_tmp}"; then
+        if ! fgrep -q "${bl}" "${ad_tmp}" && ! curl -sS "${bl}" | sed 's/^/0.0.0.0 /;s/$//' >> "${ad_hosts_tmp}"; then
             echo_err
         fi
         echo_success
         echo ""
     done
 }
-other_list
 for bl in "${AD_LIST[@]}"; do
     download "$bl" "$ad_tmp"
 done
 for wl in "${WHITE_LIST[@]}"; do
     download "$wl" "$white_tmp"
 done
+
+other_list
 
 grep "^address" "$ad_tmp" | sort | uniq >ad.conf
 grep "^address" "$white_tmp" | sort | uniq >white.conf
