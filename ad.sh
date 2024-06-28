@@ -37,7 +37,8 @@ other_list(){
     for bl in "${v2ray_rules_dat_ad[@]}"; do
         echo -n "download ${bl}"
         #if ! curl -sS "${bl}" | sed 's/^/address \//;s/$/\/#/' >> "${ad_hosts_tmp}"; then
-        if ! grep -qF "${bl}" "${ad_tmp}" && ! curl -sS "${bl}" | sed 's/^/0.0.0.0 /;s/$//' >> "${ad_hosts_tmp}"; then
+        if ! curl -sS "${bl}" | { grep -qF -f - "${ad_tmp}" && cat || sed 's/^/0.0.0.0 /;s/$//' >> "${ad_hosts_tmp}"; }; then
+        #if ! curl -sS "${bl}" | sed 's/^/0.0.0.0 /;s/$//' >> "${ad_hosts_tmp}"; then
             echo_err
         fi
         echo_success
