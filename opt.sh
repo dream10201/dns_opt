@@ -24,6 +24,7 @@ download() {
 
 download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/ad.conf" "${CONF_PATH}/ad.conf"
 download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/white.conf" "${CONF_PATH}/white.conf"
+download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/ad.hosts" "${CONF_PATH}/ad.hosts"
 
 
 CHECK_LINK=("https://www.apple.com.cn" "https://www.qq.com" "https://www.baidu.com")
