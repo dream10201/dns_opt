@@ -38,8 +38,8 @@ download() {
 for bl in "${AD_LIST[@]}"; do
     download "$bl" "$ad_tmp"
 done
-``
-cat smartdns_ad.conf | sed 's/\/\([^\/]*\)\/#/||\1^/' >> ${ad_tmp}
+
+cat smartdns_ad.conf | sed 's/^address \//||/; s/#$/^/' >> ${ad_tmp}
 grep -E '^(\|\||@@)' "${ad_tmp}" | sort | uniq >adguard_ad.txt
 
 rm ${ad_tmp}
