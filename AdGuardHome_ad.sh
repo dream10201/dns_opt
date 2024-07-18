@@ -21,8 +21,8 @@ for bl in "${AD_LIST[@]}"; do
 done
 
 cat smartdns_ad.conf | sed 's/\/\([^\/]*\)\/#/||\1^/' > ${ad_tmp}
-grep "^||" "$ad_tmp" | sort | uniq >adguard_ad.conf
-grep "^@@" "$white_tmp" | sort | uniq >adguard_white.conf
+grep "^||" "${ad_tmp}" | sort | uniq >adguard_ad.txt
+grep "^@@" "${white_tmp}" | sort | uniq >adguard_white.txt
 
 rm ${ad_tmp}
 rm ${white_tmp}
