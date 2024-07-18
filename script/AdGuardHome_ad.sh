@@ -5,6 +5,19 @@
 AD_LIST=(
     "https://anti-ad.net/adguard.txt"
     "https://adguardteam.github.io/HostlistsRegistry/assets/filter_29.txt"
+    "https://raw.githubusercontent.com/badmojr/1Hosts/master/Lite/adblock.txt"
+    "https://raw.githubusercontent.com/AdguardTeam/AdguardFilters/master/BaseFilter/sections/adservers.txt"
+    "https://raw.githubusercontent.com/AdguardTeam/AdguardFilters/master/MobileFilter/sections/adservers.txt"
+    "https://raw.githubusercontent.com/AdguardTeam/AdguardFilters/master/ChineseFilter/sections/adservers.txt"
+    "https://raw.githubusercontent.com/AdguardTeam/AdguardFilters/master/ChineseFilter/sections/adservers_firstparty.txt"
+    "https://raw.githubusercontent.com/easylist/easylist/master/easylist/easylist_thirdparty.txt"
+    "https://raw.githubusercontent.com/easylist/easylist/master/easylist_adult/adult_adservers.txt"
+    "https://raw.githubusercontent.com/easylist/easylistchina/master/easylistchina.txt"
+    "https://raw.githubusercontent.com/AdguardTeam/AdguardFilters/master/BaseFilter/sections/cryptominers.txt"
+    "https://raw.githubusercontent.com/AdguardTeam/AdGuardSDNSFilter/master/Filters/rules.txt"
+    "https://raw.githubusercontent.com/easylist/easylist/master/easylist_adult/adult_adservers_popup.txt"
+    "https://raw.githubusercontent.com/AdguardTeam/AdguardFilters/master/SpywareFilter/sections/mobile.txt"
+    "https://raw.githubusercontent.com/easylist/easylist/master/easyprivacy/easyprivacy_trackingservers.txt"
 )
 ad_tmp=$(mktemp)
 echo_err(){
