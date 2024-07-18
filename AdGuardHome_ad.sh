@@ -10,8 +10,9 @@ ad_tmp=$(mktemp)
 white_tmp=$(mktemp)
 
 download() {
-    echo -n "download ${1}"
+    echo "download ${1}"
     local temp=`curl -sS "${1}"`
+    echo ${temp}
     echo ${temp} | grep "^||" >> ${ad_tmp}
     echo ${temp} | grep "^@@" >> ${white_tmp}
 }
