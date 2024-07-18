@@ -38,12 +38,6 @@ other_list(){
     local url=""
     for bl in "${v2ray_rules_dat_ad[@]}"; do
         echo -n "download ${bl}"
-        # urls=$(curl -sS  "${bl}")
-        # for url in ${urls}; do
-        #     echo "${url}" | { grep -qF -f - "${ad_tmp}" && cat || sed 's/^/0.0.0.0 /;s/$//'; } >> "${ad_hosts_tmp}"
-        # done
-        #if ! curl -sS "${bl}" | sed 's/^/address \//;s/$/\/#/' >> "${ad_hosts_tmp}"; then
-        #curl -sS "${bl}" | { grep -qF -f - "${ad_tmp}" && cat || sed 's/^/0.0.0.0 /;s/$//'; } >> "${ad_hosts_tmp}"
         if ! curl -sS "${bl}" | sed 's/^/0.0.0.0 /;s/$//' >> "${ad_hosts_tmp}"; then
             echo_err
         fi
@@ -60,8 +54,8 @@ done
 
 other_list
 
-grep "^address" "$ad_tmp" | sort | uniq >ad.conf
-grep "^address" "$white_tmp" | sort | uniq >white.conf
+grep "^address" "$ad_tmp" | sort | uniq >smartdns_ad.conf
+grep "^address" "$white_tmp" | sort | uniq >smartdns_white.conf
 cat ${ad_hosts_tmp} | sort | uniq > ad.hosts
 
 rm ${ad_tmp}
