@@ -11,6 +11,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: refresh
         run: |
-          bash smarttdns_ad.sh
-          bash AdGuardHome_ad.sh
+          bash script/smarttdns_ad.sh
+          bash script/AdGuardHome_ad.sh
       - uses: stefanzweifel/git-auto-commit-action@v5
