@@ -3,9 +3,9 @@
 # https://www.codeclean.net/tools/bash/
 CONF_PATH="/etc/smartdns"
 CONF_NAME="smartdns.conf"
+AD_ENABLE=$1
 PROXY="http://127.0.0.1:10809"
 BLOCK_DNS=("dns.pub" "doh.360.cn" "dns.alidns.com" "doh.pub")
-
 conf_tmp=$(mktemp)
 echo_err(){
     echo  -ne " \033[31m\xE2\x9D\x8C\033[0m"
@@ -21,11 +21,11 @@ download() {
     echo_success
     echo ""
 }
-
-download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/ad.conf" "${CONF_PATH}/ad.conf"
-download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/white.conf" "${CONF_PATH}/white.conf"
-download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/ad.hosts" "${CONF_PATH}/ad.hosts"
-
+if [ -n "$AD_ENABLE" ]; then
+    download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/ad.conf" "${CONF_PATH}/ad.conf"
+    download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/white.conf" "${CONF_PATH}/white.conf"
+    download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/ad.hosts" "${CONF_PATH}/ad.hosts"
+fi
 
 CHECK_LINK=("https://www.apple.com.cn" "https://www.qq.com" "https://www.baidu.com")
 checkDoh() {
