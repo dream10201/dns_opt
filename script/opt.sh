@@ -7,6 +7,11 @@ AD_ENABLE=$1
 PROXY="http://127.0.0.1:10809"
 BLOCK_DNS=("dns.pub" "doh.360.cn" "dns.alidns.com" "doh.pub")
 conf_tmp=$(mktemp)
+cp "${CONF_PATH}/${CONF_NAME}" "$conf_tmp"
+sed -i '/^server-https/d' "$conf_tmp"
+
+
+
 echo_err(){
     echo  -ne " \033[31m\xE2\x9D\x8C\033[0m"
 }
@@ -62,8 +67,6 @@ getList(){
 }
 
 
-cp "${CONF_PATH}/${CONF_NAME}" "$conf_tmp"
-sed -i '/^server-https/d' "$conf_tmp"
 urls=$(getList)
 declare -A ping_times
 declare -A url_map
