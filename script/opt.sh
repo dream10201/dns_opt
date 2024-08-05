@@ -37,7 +37,8 @@ checkDoh() {
     local pids=()
     local fail=0
     for link in "${CHECK_LINK[@]}"; do
-        (curl -sS --connect-timeout 2 -m 4 -v --doh-url "$1" "${link}" 2>&1 -o /dev/null | grep -q "was resolved.") &
+        #(curl -sS --connect-timeout 2 -m 4 -v --doh-url "$1" "${link}" 2>&1 -o /dev/null | grep -q "was resolved.") &
+        (curl -sS -v --doh-url "$1" "${link}" 2>&1 -o /dev/null | grep -q "was resolved.") &
         pids+=($!)
     done
     while [ ${#pids[@]} -gt 0 ]; do
@@ -85,11 +86,13 @@ for url in ${urls}; do
     echo -n "${url}"
 
     if [ -z "$avg_time" ]; then
+        echo -ne " [p]"
         echo_err
         echo ""
         continue
     fi
     if ! checkDoh "$url"; then
+        echo -ne " [c]"
         echo_err
         echo ""
         continue
