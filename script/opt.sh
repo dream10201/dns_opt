@@ -32,32 +32,14 @@ if [ -n "$AD_ENABLE" ]; then
     download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/ad.hosts" "${CONF_PATH}/ad.hosts"
 fi
 
-CHECK_LINK=("https://www.apple.com.cn" "https://www.qq.com" "https://www.baidu.com")
+CHECK_LINK=("https://www.10010.com" "https://www.qq.com" "https://www.baidu.com")
 checkDoh() {
-    local pids=()
-    local fail=0
     for link in "${CHECK_LINK[@]}"; do
-        #(curl -sS --connect-timeout 2 -m 4 -v --doh-url "$1" "${link}" 2>&1 -o /dev/null | grep -q "was resolved.") &
-        (curl -sS -v --doh-url "$1" "${link}" 2>&1 -o /dev/null | grep -q "was resolved.") &
-        pids+=($!)
-    done
-    while [ ${#pids[@]} -gt 0 ]; do
-        if ! wait -n; then
-            fail=1
-            break
+        if ! curl -sIS --connect-timeout 9 -m 9 --doh-url "$1" "${link}" >/dev/null 2>&1;then
+            return 1
         fi
-        for i in "${!pids[@]}"; do
-            if ! kill -0 "${pids[i]}" 2>/dev/null; then
-                unset 'pids[i]'
-            fi
-        done
     done
-    if [ "$fail" -eq 0 ]; then
-        return 0
-    else
-        kill "${pids[@]}" &>/dev/null
-        return 1
-    fi
+    return 0
 }
 getList(){
     local urls=$(curl -sSx ${PROXY} "https://raw.githubusercontent.com/dream10201/DNS-over-HTTPS/master/doh.list")
