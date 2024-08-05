@@ -53,9 +53,18 @@ checkDoh() {
         return 1
     fi
 }
+getList(){
+    local urls=$(curl -sSx ${PROXY} "https://raw.githubusercontent.com/dream10201/DNS-over-HTTPS/master/doh.list")
+    if [ $? -ne 0 ]; then
+        exit 0
+    fi
+    echo ${urls}
+}
+
+
 cp "${CONF_PATH}/${CONF_NAME}" "$conf_tmp"
 sed -i '/^server-https/d' "$conf_tmp"
-urls=$(curl -sSx ${PROXY} "https://raw.githubusercontent.com/dream10201/DNS-over-HTTPS/master/doh.list")
+urls=$(getList)
 declare -A ping_times
 declare -A url_map
 
