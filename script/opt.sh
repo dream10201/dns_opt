@@ -124,7 +124,7 @@ done
 
 echo ""
 echo "$sorted_urls"
-echo "server-https https://doh.bidd.net" >> "${conf_tmp}"
+echo "server-https https://doh.bidd.net/1:-P8AuAAIBAB_A__p2_8iQazggBBUMyAAQGoAWA==" >> "${conf_tmp}"
 cat "$conf_tmp" >${CONF_PATH}/${CONF_NAME}
 systemctl restart smartdns.service
 
