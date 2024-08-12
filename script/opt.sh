@@ -32,14 +32,40 @@ if [ -n "$AD_ENABLE" ]; then
     download "https://raw.githubusercontent.com/dream10201/smartdns_opt/master/ad.hosts" "${CONF_PATH}/ad.hosts"
 fi
 
-CHECK_LINK=("https://www.10010.com" "https://www.qq.com" "https://www.baidu.com")
+CHECK_LINK=("https://im.qq.com" "https://www.baidu.com")
 checkDoh() {
     for link in "${CHECK_LINK[@]}"; do
-        if ! curl -sIS --connect-timeout 9 -m 9 --doh-url "$1" "${link}" >/dev/null 2>&1;then
+        if ! curl -sIS -m 9 --doh-url "$1" "${link}" &>/dev/null;then
             return 1
         fi
     done
     return 0
+}
+checkDohThread() {
+    local pids=()
+    local fail=0
+    for link in "${CHECK_LINK[@]}"; do
+        #(curl -sIS --connect-timeout 9 -m 9 --doh-url "$1" "${link}" >/dev/null 2>&1) &
+        (curl -sIS -m 9 --doh-url "$1" "${link}" &>/dev/null) &
+        pids+=($!)
+    done
+    while [ ${#pids[@]} -gt 0 ]; do
+        if ! wait -n; then
+            fail=1
+            break
+        fi
+        for i in "${!pids[@]}"; do
+            if ! kill -0 "${pids[i]}" 2>/dev/null; then
+                unset 'pids[i]'
+            fi
+        done
+    done
+    if [ "$fail" -eq 0 ]; then
+        return 0
+    else
+        kill "${pids[@]}" &>/dev/null
+        return 1
+    fi
 }
 getList(){
     local urls=$(curl -sSx ${PROXY} "https://raw.githubusercontent.com/dream10201/DNS-over-HTTPS/master/doh.list")
@@ -98,7 +124,7 @@ done
 
 echo ""
 echo "$sorted_urls"
-
+echo "server-https https://doh.bidd.net" >> "${conf_tmp}"
 cat "$conf_tmp" >${CONF_PATH}/${CONF_NAME}
 systemctl restart smartdns.service
 
