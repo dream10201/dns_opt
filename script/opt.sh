@@ -89,22 +89,21 @@ for url in ${urls}; do
     if [[ " ${BLOCK_DNS[*]} " == *" $domain "* ]]; then
         continue
     fi
-
-    avg_time=$(ping -A -c 9 -W 1 "$domain" 2>/dev/null | awk -F'/' '/^rtt/ {print $5}' 2>/dev/null)
+    avg_time=$(curl --max-time 10 --doh-url ""$url"" --output /dev/null --silent --write-out "%{time_namelookup}" www.baidu.com)
+    #avg_time=$(ping -A -c 9 -W 1 "$domain" 2>/dev/null | awk -F'/' '/^rtt/ {print $5}' 2>/dev/null)
     echo -n "${url}"
-
-    if [ -z "$avg_time" ]; then
-        echo -ne " [p]"
+    if awk "BEGIN {exit ($avg_time == 0) ? 0 : 1}"; then
+    #if [ -z "$avg_time" ]; then
         echo_err
         echo ""
         continue
     fi
-    if ! checkDoh "$url"; then
-        echo -ne " [c]"
-        echo_err
-        echo ""
-        continue
-    fi
+    # if ! checkDoh "$url"; then
+    #     echo -ne " [c]"
+    #     echo_err
+    #     echo ""
+    #     continue
+    # fi
     
     if [ -z "${ping_times[$domain]}" ] || compare_float "$avg_time" "${ping_times[$domain]}"; then
         ping_times["$domain"]=$avg_time
@@ -124,7 +123,7 @@ done
 
 echo ""
 echo "$sorted_urls"
-echo "server-https https://doh.bidd.net/1:-P8AuAAIBAB_A__p2_8iQazggBBUMyAAQGoAWA==" >> "${conf_tmp}"
+#echo "server-https https://doh.bidd.net/1:-P8AuAAIBAB_A__p2_8iQazggBBUMyAAQGoAWA==" >> "${conf_tmp}"
 cat "$conf_tmp" >${CONF_PATH}/${CONF_NAME}
 systemctl restart smartdns.service
 
