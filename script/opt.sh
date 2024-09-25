@@ -83,6 +83,7 @@ declare -A url_map
 compare_float() {
     awk -v n1="$1" -v n2="$2" 'BEGIN {if (n1 < n2) exit 0; exit 1}'
 }
+counter=0
 for url in ${urls}; do
     domain=$(echo "$url" | awk -F/ '{print $3}')
     #domain=$(echo "${url}" | sed -E 's#^.*://([^/]+).*#\1#' | sed -E 's#^.*\.([^\.]+\.[^\.]+)$#\1#')
@@ -91,7 +92,8 @@ for url in ${urls}; do
     fi
     avg_time=$(curl --max-time 10 --doh-url ""$url"" --output /dev/null --silent --write-out "%{time_namelookup}" www.baidu.com)
     #avg_time=$(ping -A -c 9 -W 1 "$domain" 2>/dev/null | awk -F'/' '/^rtt/ {print $5}' 2>/dev/null)
-    echo -n "${url}"
+    ((counter++))
+    echo -n "[${counter}] ${url}"
     if awk "BEGIN {exit ($avg_time == 0) ? 0 : 1}"; then
     #if [ -z "$avg_time" ]; then
         echo_err
@@ -104,7 +106,7 @@ for url in ${urls}; do
     #     echo ""
     #     continue
     # fi
-    
+
     if [ -z "${ping_times[$domain]}" ] || compare_float "$avg_time" "${ping_times[$domain]}"; then
         ping_times["$domain"]=$avg_time
         url_map["$domain"]=$url
